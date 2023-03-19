@@ -5,6 +5,7 @@ import { GetParameterResult } from 'aws-sdk/clients/ssm';
 
 import { EnvironmentInterface } from '/opt/src/libs/interfaces/environment.interface';
 import { SYSTEM_MANAGER } from '/opt/src/libs/shared/injectables';
+import { log } from '/opt/src/libs/utils';
 
 const SERVICE_NAME = 'SsmService';
 
@@ -14,7 +15,7 @@ export class SSMService {
 
   constructor(
     @Inject(SYSTEM_MANAGER) private readonly _ssm: SSM,
-    private _configService: ConfigService,
+    private readonly _configService: ConfigService,
   ) {
     const { ssmPath }: EnvironmentInterface =
       this._configService.get<EnvironmentInterface>('config');
@@ -26,7 +27,7 @@ export class SSMService {
     Name: string,
     WithDecryption?: boolean,
   ): Promise<GetParameterResult> {
-    console.info({
+    log('INFO', {
       SERVICE_NAME,
       params: {
         Name,

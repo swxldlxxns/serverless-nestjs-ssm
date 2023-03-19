@@ -4,7 +4,7 @@ import { SSM } from 'aws-sdk';
 import { GetParameterResult } from 'aws-sdk/clients/ssm';
 
 import { AppService } from '/opt/src/app.service';
-import { GetRequestsDto } from '/opt/src/libs/dtos/get-requests.dto';
+import { GetRequestsDto } from '/opt/src/libs/dtos/requests/get-requests.dto';
 import { SSMService } from '/opt/src/libs/services/ssm.service';
 import { SYSTEM_MANAGER } from '/opt/src/libs/shared/injectables';
 import { errorResponse, formatResponse } from '/opt/src/libs/utils';

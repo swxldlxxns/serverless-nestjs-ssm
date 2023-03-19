@@ -35,7 +35,7 @@ export function formatResponse<T>(
   SERVICE_NAME: string,
   statusCode: HttpStatus = HttpStatus.OK,
 ): APIGatewayProxyResult {
-  console.info({ SERVICE_NAME, response });
+  log('INFO', { SERVICE_NAME, response });
 
   return {
     statusCode,
@@ -48,7 +48,7 @@ export function errorResponse(
   SERVICE_NAME: string,
   statusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
 ): APIGatewayProxyResult {
-  console.error({ SERVICE_NAME, catchErrors });
+  log('ERROR', { SERVICE_NAME, catchErrors });
 
   return formatResponse(
     {
@@ -59,4 +59,15 @@ export function errorResponse(
     SERVICE_NAME,
     statusCode,
   );
+}
+
+export function log(type: 'INFO' | 'ERROR', data: object): void {
+  switch (type) {
+    case 'INFO':
+      console.info(data);
+      break;
+    case 'ERROR':
+      console.error(data);
+      break;
+  }
 }
