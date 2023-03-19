@@ -4,7 +4,7 @@ import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 
 import { AppModule } from '/opt/src/app.module';
 import { AppService } from '/opt/src/app.service';
-import { GetRequestsDto } from '/opt/src/libs/interfaces/request/get-requests.dto';
+import { GetRequestsDto } from '/opt/src/libs/dtos/get-requests.dto';
 import {
   checkQueryParam,
   errorResponse,
@@ -32,11 +32,13 @@ exports.handler = async function (
     checkQueryParam(event.queryStringParameters),
   );
   const errors = await errorsDto(param);
+
   if (errors.length)
     return errorResponse(
       { message: errors },
       SERVICE_NAME,
       HttpStatus.BAD_REQUEST,
     );
+
   return await appService.get(param);
 };

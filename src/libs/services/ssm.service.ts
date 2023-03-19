@@ -1,18 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SSM } from 'aws-sdk';
 import { GetParameterResult } from 'aws-sdk/clients/ssm';
 
-import { ENV_VARS } from '/opt/src/libs/shared/enviroments';
+import { EnvironmentInterface } from '/opt/src/libs/interfaces/environment.interface';
+import { SYSTEM_MANAGER } from '/opt/src/libs/shared/injectables';
 
 const SERVICE_NAME = 'SsmService';
-const { region, ssmPath } = ENV_VARS;
-const ssm = new SSM({
-  region,
-  apiVersion: 'latest',
-});
 
 @Injectable()
 export class SSMService {
+  private readonly _ssmPath: string;
+
+  constructor(
+    @Inject(SYSTEM_MANAGER) private readonly _ssm: SSM,
+    private _configService: ConfigService,
+  ) {
+    const { ssmPath }: EnvironmentInterface =
+      this._configService.get<EnvironmentInterface>('config');
+
+    this._ssmPath = ssmPath;
+  }
+
   async get(
     Name: string,
     WithDecryption?: boolean,
@@ -21,13 +30,13 @@ export class SSMService {
       SERVICE_NAME,
       params: {
         Name,
-        ssmPath,
         WithDecryption,
+        ssmPath: this._ssmPath,
       },
     });
 
-    return await ssm
-      .getParameter({ Name: `${ssmPath}/${Name}`, WithDecryption })
+    return await this._ssm
+      .getParameter({ Name: `${this._ssmPath}/${Name}`, WithDecryption })
       .promise();
   }
 }

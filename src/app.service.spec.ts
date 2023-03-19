@@ -1,9 +1,12 @@
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SSM } from 'aws-sdk';
 import { GetParameterResult } from 'aws-sdk/clients/ssm';
 
 import { AppService } from '/opt/src/app.service';
-import { GetRequestsDto } from '/opt/src/libs/interfaces/request/get-requests.dto';
+import { GetRequestsDto } from '/opt/src/libs/dtos/get-requests.dto';
 import { SSMService } from '/opt/src/libs/services/ssm.service';
+import { SYSTEM_MANAGER } from '/opt/src/libs/shared/injectables';
 import { errorResponse, formatResponse } from '/opt/src/libs/utils';
 
 const SERVICE_NAME = 'AppService';
@@ -17,8 +20,27 @@ describe('AppService', () => {
   beforeEach(async () => {
     global.console = require('console');
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AppService, SSMService],
+      providers: [
+        AppService,
+        SSMService,
+        {
+          provide: ConfigService,
+          useFactory: () => ({
+            get: () => ({
+              accountId: process.env.ACCOUNT_ID,
+              stage: process.env.STAGE,
+              region: process.env.REGION,
+              ssmPath: process.env.SSM_PATH,
+            }),
+          }),
+        },
+        {
+          provide: SYSTEM_MANAGER,
+          useValue: SSM,
+        },
+      ],
     }).compile();
+
     service = module.get<AppService>(AppService);
     ssmService = module.get<SSMService>(SSMService);
   });
