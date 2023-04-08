@@ -1,6 +1,6 @@
+import { SSM } from '@aws-sdk/client-ssm';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
-import { SSM } from 'aws-sdk';
 
 import { AppService } from '/opt/src/app.service';
 import config from '/opt/src/config';

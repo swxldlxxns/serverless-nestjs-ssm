@@ -1,7 +1,6 @@
+import { GetParameterCommandOutput } from '@aws-sdk/client-ssm/dist-types/commands/GetParameterCommand';
 import { Injectable } from '@nestjs/common';
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { GetParameterResult } from 'aws-sdk/clients/ssm';
-import { get } from 'lodash';
 
 import { GetRequestsDto } from '/opt/src/libs/dtos/requests/get-requests.dto';
 import { GetResponseInterface } from '/opt/src/libs/interfaces/responses.interface';
@@ -16,8 +15,10 @@ export class AppService {
 
   async get({ name }: GetRequestsDto): Promise<APIGatewayProxyResult> {
     try {
-      const result: GetParameterResult = await this._ssmService.get(name);
-      const value = get(result, 'Parameter.Value');
+      const result: GetParameterCommandOutput = await this._ssmService.get(
+        name,
+      );
+      const value = result.Parameter?.Value;
 
       return formatResponse<GetResponseInterface>(
         { name, value },

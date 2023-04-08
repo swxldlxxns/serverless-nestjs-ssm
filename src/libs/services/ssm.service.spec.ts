@@ -1,6 +1,6 @@
+import { SSM } from '@aws-sdk/client-ssm';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SSM } from 'aws-sdk';
 import { GetParameterResult } from 'aws-sdk/clients/ssm';
 
 import { SSMService } from '/opt/src/libs/services/ssm.service';
@@ -40,9 +40,7 @@ describe('SSMService', () => {
   });
 
   it('should return ssm parameter', async () => {
-    ssm.getParameter = jest.fn().mockImplementation(() => ({
-      promise: jest.fn().mockResolvedValue(ssmResult),
-    }));
+    ssm.getParameter = jest.fn().mockResolvedValue(ssmResult);
     expect(await service.get('test', false)).toEqual(ssmResult);
   });
 });
