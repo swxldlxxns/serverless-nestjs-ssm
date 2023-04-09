@@ -1,7 +1,7 @@
+import { SSM } from '@aws-sdk/client-ssm';
+import { GetParameterCommandOutput } from '@aws-sdk/client-ssm/dist-types/commands/GetParameterCommand';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SSM } from 'aws-sdk';
-import { GetParameterResult } from 'aws-sdk/clients/ssm';
 
 import { AppService } from '/opt/src/app.service';
 import { GetRequestsDto } from '/opt/src/libs/dtos/requests/get-requests.dto';
@@ -12,7 +12,10 @@ import { errorResponse, formatResponse } from '/opt/src/libs/utils';
 const SERVICE_NAME = 'AppService';
 
 describe('AppService', () => {
-  const ssmResult: GetParameterResult = { Parameter: { Value: 'test' } };
+  const ssmResult: GetParameterCommandOutput = {
+    Parameter: { Value: 'test' },
+    $metadata: {},
+  };
   const getDto: GetRequestsDto = { name: 'test' };
   let service: AppService;
   let ssmService: SSMService;
@@ -54,7 +57,8 @@ describe('AppService', () => {
     jest
       .spyOn(ssmService, 'get')
       .mockImplementation(
-        async (): Promise<GetParameterResult> => Promise.resolve(ssmResult),
+        async (): Promise<GetParameterCommandOutput> =>
+          Promise.resolve(ssmResult),
       );
     expect(await service.get(getDto)).toEqual(
       formatResponse(

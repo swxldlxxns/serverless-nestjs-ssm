@@ -1,7 +1,7 @@
+import { SSM } from '@aws-sdk/client-ssm';
+import { GetParameterCommandOutput } from '@aws-sdk/client-ssm/dist-types/commands/GetParameterCommand';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SSM } from 'aws-sdk';
-import { GetParameterResult } from 'aws-sdk/clients/ssm';
 
 import { EnvironmentInterface } from '/opt/src/libs/interfaces/environment.interface';
 import { SYSTEM_MANAGER } from '/opt/src/libs/shared/injectables';
@@ -26,7 +26,7 @@ export class SSMService {
   async get(
     Name: string,
     WithDecryption?: boolean,
-  ): Promise<GetParameterResult> {
+  ): Promise<GetParameterCommandOutput> {
     log('INFO', {
       SERVICE_NAME,
       params: {
@@ -36,8 +36,9 @@ export class SSMService {
       },
     });
 
-    return await this._ssm
-      .getParameter({ Name: `${this._ssmPath}/${Name}`, WithDecryption })
-      .promise();
+    return await this._ssm.getParameter({
+      Name: `${this._ssmPath}/${Name}`,
+      WithDecryption,
+    });
   }
 }
